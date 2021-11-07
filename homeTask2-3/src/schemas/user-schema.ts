@@ -13,8 +13,8 @@ export interface UserRequestSchema extends ValidatedRequestSchema {
   }
 }
 
-export const userSchema = (users) => Joi.object({
-    login: Joi.string().invalid(...users.map(user => user.login)).required(),
+export const userSchema = Joi.object({
+    login: Joi.string().required(),
     password: JoiPassword.string().min(3).minOfNumeric(1).minOfLowercase(1).minOfUppercase(1).required(),
     age: Joi.number().min(4).max(130).required()
 });
