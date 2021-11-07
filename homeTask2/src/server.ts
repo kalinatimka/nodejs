@@ -52,7 +52,7 @@ app.get(
     (req: ValidatedRequest<AutoSuggestRequestSchema>, res: Response) => {
         const autoSuggestList = users
             .filter(user => user.login.includes(req.query.loginSubstring) && !user.isDeleted)
-            .sort((userA, userB) => userA.login > userB.login ? 1 : -1)
+            .sort((userA, userB) => userA.login.localeCompare(userB.login))
             .slice(0, req.query.limit);
         res.send(autoSuggestList);
     },
