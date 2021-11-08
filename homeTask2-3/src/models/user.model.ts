@@ -1,7 +1,12 @@
-export type User = {
-  id: string;
-  login: string;
-  password: string;
-  age: number;
-  isDeleted: boolean;
-}
+import { DataTypes } from 'sequelize';
+
+import db from '../data-access/database';
+
+const DBUser = db.define('User', {
+    login: DataTypes.TEXT,
+    password: DataTypes.TEXT,
+    age: DataTypes.INTEGER,
+    isDeleted: DataTypes.BOOLEAN
+});
+
+export default DBUser;
