@@ -6,14 +6,14 @@ export default class UserService {
         const users = await DBUser.findAll();
 
         if (!users.length) {
-            for (let index = 0; index < 5; index++) {
-                await DBUser.create({
+            await DBUser.bulkCreate(
+                Array(5).fill('').map((_, index) => ({
                     login: `testUser${ index + 1 }`,
                     password: `password${ index }`,
                     age: index + 18,
                     isDeleted: false
-                });
-            }
+                }))
+            );
         }
     }
 
