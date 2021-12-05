@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { ValidatedRequest, createValidator } from 'express-joi-validation';
 import { groupSchema, GroupRequestSchema } from '../schemas/group-schema';
 
@@ -10,21 +10,29 @@ const groupService = new GroupService();
 
 groupsRouter.get(
     '/getAllGroups',
-    async (req: Request, res: Response) => {
-        const dbGroups = await groupService.getAllGroups();
-        res.send(dbGroups);
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dbGroups = await groupService.getAllGroups();
+            res.send(dbGroups);
+        } catch (e) {
+            return next(e);
+        }
     }
 );
 
 groupsRouter.get(
     '/group/:groupId',
-    async (req: Request, res: Response) => {
-        const group = await groupService.getGroupById(req.params.groupId);
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const group = await groupService.getGroupById(req.params.groupId);
 
-        if (!group) {
-            res.status(400).send('No groups with such ID');
-        } else {
-            res.send(group);
+            if (!group) {
+                res.status(400).send('No groups with such ID');
+            } else {
+                res.send(group);
+            }
+        } catch (e) {
+            return next(e);
         }
     }
 );
@@ -32,55 +40,75 @@ groupsRouter.get(
 groupsRouter.post(
     '/createGroup',
     validator.body(groupSchema),
-    async (req: ValidatedRequest<GroupRequestSchema>, res: Response) => {
-        const { name, permissions } = req.body;
+    async (req: ValidatedRequest<GroupRequestSchema>, res: Response, next: NextFunction) => {
+        try {
+            const { name, permissions } = req.body;
 
-        await groupService.createGroup(name, permissions);
+            await groupService.createGroup(name, permissions);
 
-        res.sendStatus(200);
+            res.sendStatus(200);
+        } catch (e) {
+            return next(e);
+        }
     },
 );
 
 groupsRouter.put(
     '/updateGroup/:groupId',
     validator.body(groupSchema),
-    async (req: ValidatedRequest<GroupRequestSchema>, res: Response) => {
-        const { name, permissions } = req.body;
-        const { groupId } = req.params;
+    async (req: ValidatedRequest<GroupRequestSchema>, res: Response, next: NextFunction) => {
+        try {
+            const { name, permissions } = req.body;
+            const { groupId } = req.params;
 
-        const updatedUser = await groupService.updateGroup(
-            groupId,
-            name,
-            permissions,
-        );
+            const updatedUser = await groupService.updateGroup(
+                groupId,
+                name,
+                permissions,
+            );
 
-        if (!updatedUser) {
-            res.status(400).send('No groups with such ID');
-        } else {
-            res.sendStatus(200);
+            if (!updatedUser) {
+                res.status(400).send('No groups with such ID');
+            } else {
+                res.sendStatus(200);
+            }
+        } catch (e) {
+            return next(e);
         }
     }
 );
 
 groupsRouter.delete(
     '/deleteGroup/:groupId',
-    async (req: Request, res: Response) => {
-        const { groupId } = req.params;
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { groupId } = req.params;
 
-        await groupService.deleteGroup(groupId);
+            const destroyedRows = await groupService.deleteGroup(groupId);
 
-        res.sendStatus(200);
+            if (!destroyedRows) {
+                res.status(400).send('No groups with such ID');
+            } else {
+                res.sendStatus(200);
+            }
+        } catch (e) {
+            return next(e);
+        }
     }
 );
 
 groupsRouter.post(
     '/addUsersToGroup',
-    async (req: Request, res: Response) => {
-        const { groupId, userIds } = req.body;
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { groupId, userIds } = req.body;
 
-        const groupsUsers = await groupService.addUsersToGroup(groupId, userIds);
+            const groupsUsers = await groupService.addUsersToGroup(groupId, userIds);
 
-        res.send(groupsUsers);
+            res.send(groupsUsers);
+        } catch (e) {
+            return next(e);
+        }
     },
 );
 

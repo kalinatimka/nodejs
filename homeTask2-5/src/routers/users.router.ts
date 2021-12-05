@@ -11,21 +11,29 @@ const userService = new UserService();
 
 usersRouter.get(
     '/getAllUsers',
-    async (req: Request, res: Response) => {
-        const dbUsers = await userService.getAllUsers();
-        res.send(dbUsers);
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dbUsers = await userService.getAllUsers();
+            res.send(dbUsers);
+        } catch (e) {
+            return next(e);
+        }
     }
 );
 
 usersRouter.get(
     '/user/:userId',
-    async (req: Request, res: Response) => {
-        const user = await userService.findUserById(req.params.userId);
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user = await userService.findUserById(req.params.userId);
 
-        if (!user) {
-            res.status(400).send('No users with such ID');
-        } else {
-            res.send(user);
+            if (!user) {
+                res.status(400).send('No users with such ID');
+            } else {
+                res.send(user);
+            }
+        } catch (e) {
+            return next(e);
         }
     }
 );
@@ -33,15 +41,19 @@ usersRouter.get(
 usersRouter.get(
     '/getAutoSuggestUsers',
     validator.query(autoSuggestSchema),
-    async (req: ValidatedRequest<AutoSuggestRequestSchema>, res: Response) => {
-        const { loginSubstring, limit } = req.query;
+    async (req: ValidatedRequest<AutoSuggestRequestSchema>, res: Response, next: NextFunction) => {
+        try {
+            const { loginSubstring, limit } = req.query;
 
-        const autoSuggestList = await userService.getAutoSuggestUsers(
-            loginSubstring,
-            limit,
-        );
+            const autoSuggestList = await userService.getAutoSuggestUsers(
+                loginSubstring,
+                limit,
+            );
 
-        res.send(autoSuggestList);
+            res.send(autoSuggestList);
+        } catch (e) {
+            return next(e);
+        }
     },
 );
 
@@ -49,12 +61,16 @@ usersRouter.post(
     '/createUser',
     validator.body(userSchema),
     loginValidator,
-    async (req: ValidatedRequest<UserRequestSchema>, res: Response) => {
-        const { login, password, age } = req.body;
+    async (req: ValidatedRequest<UserRequestSchema>, res: Response, next: NextFunction) => {
+        try {
+            const { login, password, age } = req.body;
 
-        await userService.createUser(login, password, age);
+            await userService.createUser(login, password, age);
 
-        res.sendStatus(200);
+            res.sendStatus(200);
+        } catch (e) {
+            return next(e);
+        }
     },
 );
 
@@ -62,36 +78,44 @@ usersRouter.put(
     '/updateUser/:userId',
     validator.body(userSchema),
     loginValidator,
-    async (req: ValidatedRequest<UserRequestSchema>, res: Response) => {
-        const { login, password, age } = req.body;
-        const { userId } = req.params;
+    async (req: ValidatedRequest<UserRequestSchema>, res: Response, next: NextFunction) => {
+        try {
+            const { login, password, age } = req.body;
+            const { userId } = req.params;
 
-        const updatedUser = await userService.updateUser(
-            userId,
-            login,
-            password,
-            age,
-        );
+            const [affectedRows] = await userService.updateUser(
+                userId,
+                login,
+                password,
+                age,
+            );
 
-        if (!updatedUser) {
-            res.status(400).send('No users with such ID');
-        } else {
-            res.sendStatus(200);
+            if (!affectedRows) {
+                res.status(400).send('No users with such ID');
+            } else {
+                res.sendStatus(200);
+            }
+        } catch (e) {
+            return next(e);
         }
     }
 );
 
 usersRouter.delete(
     '/deleteUser/:userId',
-    async (req: Request, res: Response) => {
-        const { userId } = req.params;
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { userId } = req.params;
 
-        const updatedUser = await userService.deleteUser(userId);
+            const [affectedRows] = await userService.deleteUser(userId);
 
-        if (!updatedUser) {
-            res.status(400).send('No users with such ID');
-        } else {
-            res.sendStatus(200);
+            if (!affectedRows) {
+                res.status(400).send('No users with such ID');
+            } else {
+                res.sendStatus(200);
+            }
+        } catch (e) {
+            return next(e);
         }
     }
 );
