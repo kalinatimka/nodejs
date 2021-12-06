@@ -18,7 +18,8 @@
         "joi-password": "^1.6.0",
         "pg": "^8.7.1",
         "sequelize": "^6.9.0",
-        "uuid": "^8.3.2"
+        "uuid": "^8.3.2",
+        "winston": "^3.3.3"
     },
     "devDependencies": {
         "@types/express": "^4.17.13",
