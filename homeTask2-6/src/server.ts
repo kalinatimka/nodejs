@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import cors from 'cors';
 
 import db from './data-access/database';
 import UserService from './services/user.service';
@@ -19,6 +20,8 @@ async function startServer() {
 
     await userService.fillTableIfEmpty();
     await groupService.fillTableIfEmpty();
+
+    app.use(cors());
 
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
