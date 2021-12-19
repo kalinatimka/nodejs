@@ -45,6 +45,16 @@ export default class UserService {
         }
     }
 
+    public async findUserByLogin(login: string) {
+        try {
+            return await DBUser.findOne({
+                where: { login }
+            });
+        } catch (e) {
+            logger.error(`Method: "findUserByLogin". Arguments: login - ${login}. Message: ${e.message}`);
+        }
+    }
+
     public async getAutoSuggestUsers(substring: string, limit: number) {
         try {
             return await DBUser.findAll({

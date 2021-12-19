@@ -1,8 +1,11 @@
 import express, { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import cors from 'cors';
 
 import db from './data-access/database';
 import UserService from './services/user.service';
 import GroupService from './services/group.service';
+import authRouter from './routers/authorize.router';
 import usersRouter from './routers/users.router';
 import groupsRouter from './routers/groups.router';
 import { logger } from './services/logger.service';
@@ -18,10 +21,16 @@ async function startServer() {
     await userService.fillTableIfEmpty();
     await groupService.fillTableIfEmpty();
 
+    app.use(cors());
+
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
     app.use(loggerMiddleware);
+
+    app.use('/auth', authRouter);
+
+    app.use(checkToken);
 
     app.use('/users', usersRouter);
     app.use('/groups', groupsRouter);
@@ -45,6 +54,21 @@ function loggerMiddleware(req: Request, res: Response, next: NextFunction) {
 
     logger.debug(message);
     next();
+}
+
+function checkToken(req: Request, res: Response, next: NextFunction) {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.sendStatus(401);
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err) => {
+        if (err) {
+            return res.sendStatus(403);
+        }
+        next();
+    });
 }
 
 function errorHandlerMiddleware(err: Error, req: Request, res: Response) {
