@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { ValidatedRequest, createValidator } from 'express-joi-validation';
 import { groupSchema, GroupRequestSchema } from '../schemas/group-schema';
 
-import GroupService from '../services/group.service';
+import GroupService from '../services/group/group.service';
 
 const groupsRouter = Router();
 const validator = createValidator({ statusCode: 400 });

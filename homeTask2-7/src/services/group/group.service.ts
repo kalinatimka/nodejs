@@ -1,8 +1,8 @@
-import db from '../data-access/database';
-import DBUser from '../models/user.model';
-import DBGroup from '../models/group.model';
-import DBUserGroup from '../models/user-group.model';
-import { logger } from './logger.service';
+import db from '../../data-access/database';
+import DBUser from '../../models/user.model';
+import DBGroup from '../../models/group.model';
+import DBUserGroup from '../../models/user-group.model';
+import { logger } from '../logger.service';
 
 export default class GroupService {
     public async fillTableIfEmpty() {

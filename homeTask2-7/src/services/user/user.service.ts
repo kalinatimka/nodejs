@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
-import DBUser from '../models/user.model';
-import { logger } from './logger.service';
+import DBUser from '../../models/user.model';
+import { logger } from '../logger.service';
 
 export default class UserService {
     public async fillTableIfEmpty() {
@@ -42,6 +42,16 @@ export default class UserService {
             });
         } catch (e) {
             logger.error(`Method: "findUserById". Arguments: id - ${id}. Message: ${e.message}`);
+        }
+    }
+
+    public async findUserByLogin(login: string) {
+        try {
+            return await DBUser.findOne({
+                where: { login }
+            });
+        } catch (e) {
+            logger.error(`Method: "findUserByLogin". Arguments: login - ${login}. Message: ${e.message}`);
         }
     }
 

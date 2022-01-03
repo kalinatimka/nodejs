@@ -3,7 +3,7 @@ import { ValidatedRequest, createValidator } from 'express-joi-validation';
 
 import { AutoSuggestRequestSchema, autoSuggestSchema } from '../schemas/autosuggest-schema';
 import { UserRequestSchema, userSchema } from '../schemas/user-schema';
-import UserService from '../services/user.service';
+import UserService from '../services/user/user.service';
 
 const usersRouter = Router();
 const validator = createValidator({ statusCode: 400 });
