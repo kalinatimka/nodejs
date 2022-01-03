@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
-import DBUser from '../models/user.model';
-import { logger } from './logger.service';
+import DBUser from '../../models/user.model';
+import { logger } from '../logger.service';
 
 export default class UserService {
     public async fillTableIfEmpty() {

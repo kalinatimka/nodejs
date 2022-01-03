@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-import UserService from '../services/user.service';
+import UserService from '../services/user/user.service';
 
 const authRouter = Router();
 const userService = new UserService();
